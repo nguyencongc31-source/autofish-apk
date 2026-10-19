@@ -1,0 +1,37 @@
+# =========================================================================
+# GITHUB ACTIONS CLOUD APK BUILDER - TỰ ĐỘNG ĐÓNG GÓI FILE .APK TRÊN ĐÁM MÂY
+# Giúp bạn tạo file cài đặt "PT AutoFish Pro.apk" ngay trên trình duyệt Điện Thoại
+# mà KHÔNG CẦN cài đặt Android Studio hay sử dụng máy tính!
+# =========================================================================
+
+name: Build Standalone Play Together AutoFish APK
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build-android-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1. Tải mã nguồn dự án
+        uses: actions/checkout@v4
+
+      - name: 2. Cài đặt JDK 17 cho Android
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: 3. Khởi tạo Gradle & Biên dịch File .APK Độc Lập
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: 4. Đóng gói bản Debug APK
+        run: ./gradlew assembleDebug
+
+      - name: 5. Xuất file cài đặt .APK để tải về Điện Thoại
+        uses: actions/upload-artifact@v4
+        with:
+          name: PT-AutoFish-Pro-Standalone-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
